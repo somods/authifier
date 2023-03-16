@@ -1,5 +1,5 @@
 [package]
-name = "somods_rocket_authifier"
+name = "rocket_authifier"
 version = "1.0.7"
 edition = "2021"
 license = "Apache-2.0"
