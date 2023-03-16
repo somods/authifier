@@ -51,6 +51,7 @@ impl Account {
 
                 email,
                 email_normalised,
+                phone_number: "".to_string(),
                 password,
 
                 disabled: false,

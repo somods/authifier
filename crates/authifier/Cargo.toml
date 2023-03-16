@@ -73,3 +73,7 @@ rust-argon2 = "1.0.0"
 # Email
 lettre = "0.10.0-alpha.4"
 handlebars = "4.3.0"
+
+# Sms
+gostd = { version = "0.3.10" }
+alibaba-cloud-sdk-rust = { version = "0.1.10" }

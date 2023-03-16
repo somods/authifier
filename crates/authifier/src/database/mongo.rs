@@ -6,7 +6,7 @@ use std::{ops::Deref, str::FromStr};
 use ulid::Ulid;
 
 use crate::{
-    models::{Account, Invite, MFATicket, Session},
+    models::{Account, Invite, MFATicket, Session, SMSCaptcha},
     Error, Result, Success,
 };
 
@@ -566,6 +566,29 @@ impl AbstractDatabase for MongoDb {
             .map_err(|_| Error::DatabaseError {
                 operation: "delete_one",
                 with: "mfa_ticket",
+            })
+            .map(|_| ())
+    }
+
+    /// Save sms captcha
+    async fn save_sms_captcha(&self, sms_captcha: &SMSCaptcha) -> Success {
+        self.collection::<SMSCaptcha>("sms_captcha")
+            .update_one(
+                doc! {
+                    "_id": &sms_captcha.id
+                },
+                doc! {
+                    "$set": to_document(sms_captcha).map_err(|_| Error::DatabaseError {
+                        operation: "to_document",
+                        with: "sms_captcha",
+                    })?,
+                },
+                UpdateOptions::builder().upsert(true).build(),
+            )
+            .await
+            .map_err(|_| Error::DatabaseError {
+                operation: "upsert_one",
+                with: "sms_captcha",
             })
             .map(|_| ())
     }

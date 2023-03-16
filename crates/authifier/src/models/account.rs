@@ -63,6 +63,9 @@ pub struct Account {
     /// (see https://github.com/insertish/authifier/#how-does-authifier-work)
     pub email_normalised: String,
 
+    /// User's phone number
+    pub phone_number: String,
+
     /// Argon2 hashed password
     pub password: String,
 

@@ -12,6 +12,7 @@ pub mod password_reset;
 pub mod resend_verification;
 pub mod send_password_reset;
 pub mod verify_email;
+pub mod send_sms_captcha;
 
 pub fn routes() -> (Vec<Route>, OpenApi) {
     openapi_get_routes_spec![
@@ -25,6 +26,7 @@ pub fn routes() -> (Vec<Route>, OpenApi) {
         change_email::change_email,
         verify_email::verify_email,
         password_reset::password_reset,
-        send_password_reset::send_password_reset
+        send_password_reset::send_password_reset,
+        send_sms_captcha::send_sms_captcha
     ]
 }

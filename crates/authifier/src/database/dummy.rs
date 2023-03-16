@@ -1,5 +1,5 @@
 use crate::{
-    models::{Account, Invite, MFATicket, Session},
+    models::{Account, Invite, MFATicket, Session, SMSCaptcha},
     Result, Success,
 };
 
@@ -106,5 +106,10 @@ impl AbstractDatabase for DummyDb {
     /// Delete ticket
     async fn delete_ticket(&self, id: &str) -> Success {
         todo!("{id}")
+    }
+
+    // Save sms captcha
+    async fn save_sms_captcha(&self, sms_captcha: &SMSCaptcha) -> Success {
+        todo!("{sms_captcha:?}")
     }
 }

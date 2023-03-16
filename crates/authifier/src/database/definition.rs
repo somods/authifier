@@ -1,5 +1,5 @@
 use crate::{
-    models::{Account, Invite, MFATicket, Session},
+    models::{Account, Invite, MFATicket, Session, SMSCaptcha},
     Result, Success,
 };
 
@@ -66,4 +66,7 @@ pub trait AbstractDatabase: std::marker::Sync {
 
     /// Delete ticket
     async fn delete_ticket(&self, id: &str) -> Success;
+
+    // Save sms captcha
+    async fn save_sms_captcha(&self, sms_captcha: &SMSCaptcha) -> Success;
 }
