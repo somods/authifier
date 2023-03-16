@@ -229,6 +229,28 @@ impl AbstractDatabase for MongoDb {
             })
     }
 
+    async fn find_account_by_phone_number(&self, phone_number: &str) -> Result<Option<Account>> {
+        self.collection("accounts")
+            .find_one(
+                doc! {
+                    "phone_number": phone_number
+                },
+                FindOneOptions::builder()
+                    .collation(
+                        Collation::builder()
+                            .locale("en")
+                            .strength(CollationStrength::Secondary)
+                            .build(),
+                    )
+                    .build(),
+            )
+            .await
+            .map_err(|_| Error::DatabaseError {
+                operation: "find_one",
+                with: "account",
+            })
+    }
+
     /// Find account with active pending email verification
     async fn find_account_with_email_verification(&self, token: &str) -> Result<Account> {
         self.collection("accounts")
@@ -568,6 +590,27 @@ impl AbstractDatabase for MongoDb {
                 with: "mfa_ticket",
             })
             .map(|_| ())
+    }
+
+    /// Find sms captcha
+    async fn find_sms_captcha(&self, phone_number: &str, sms_captcha: &str) -> Result<Option<SMSCaptcha>> {
+        let sms_captcha: SMSCaptcha = self
+            .collection("sms_captcha")
+            .find_one(
+                doc! {
+                    "phone_number": phone_number,
+                    "sms_captcha": sms_captcha,
+                },
+                None,
+            )
+            .await
+            .map_err(|_| Error::DatabaseError {
+                operation: "find_one",
+                with: "sms_captcha",
+            })?
+            .ok_or(Error::InvalidSMSCaptcha)?;
+
+        Ok(Some(sms_captcha))
     }
 
     /// Save sms captcha

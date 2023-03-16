@@ -28,6 +28,11 @@ impl AbstractDatabase for DummyDb {
         todo!("{normalised_email}")
     }
 
+    /// Find account by phone number
+    async fn find_account_by_phone_number(&self, phone_number: &str) -> Result<Option<Account>> {
+        todo!("{phone_number}")
+    }
+
     /// Find account with active pending email verification
     async fn find_account_with_email_verification(&self, token: &str) -> Result<Account> {
         todo!("{token}")
@@ -108,7 +113,12 @@ impl AbstractDatabase for DummyDb {
         todo!("{id}")
     }
 
-    // Save sms captcha
+    /// Find sms captcha
+    async fn find_sms_captcha(&self, phone_number: &str, sms_captcha: &str) -> Result<Option<SMSCaptcha>> {
+        todo!("{phone_number} {sms_captcha}")
+    }
+
+    /// Save sms captcha
     async fn save_sms_captcha(&self, sms_captcha: &SMSCaptcha) -> Success {
         todo!("{sms_captcha:?}")
     }

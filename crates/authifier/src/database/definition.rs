@@ -19,6 +19,12 @@ pub trait AbstractDatabase: std::marker::Sync {
         normalised_email: &str,
     ) -> Result<Option<Account>>;
 
+    /// Find account by phone number
+    async fn find_account_by_phone_number(
+        &self,
+        phone_number: &str,
+    ) -> Result<Option<Account>>;
+
     /// Find account with active pending email verification
     async fn find_account_with_email_verification(&self, token: &str) -> Result<Account>;
 
@@ -67,6 +73,9 @@ pub trait AbstractDatabase: std::marker::Sync {
     /// Delete ticket
     async fn delete_ticket(&self, id: &str) -> Success;
 
-    // Save sms captcha
+    /// Find sms captcha
+    async fn find_sms_captcha(&self, phone_number: &str, sms_captcha: &str) -> Result<Option<SMSCaptcha>>;
+
+    /// Save sms captcha
     async fn save_sms_captcha(&self, sms_captcha: &SMSCaptcha) -> Success;
 }

@@ -1,16 +1,15 @@
 use chrono::Duration;
 use iso8601_timestamp::Timestamp;
+use rand::Rng;
 use crate::{models::SMSCaptcha, Authifier, Success};
-use alibaba_cloud_sdk_rust::services::dysmsapi;
-use gostd::strings;
-
-const ALIYUN_SMS_SERVER_REGION: &str = "cn-hangzhou";
-const ALIYUN_SMS_ACCESS_KEY_ID: &str = "LTAI4FwqPxiA111111111";
-const ALIYUN_SMS_ACCESS_KEY_SECRET: &str = "ESX1wX11111FJqHTTLwDU2222cP1";
+use sms::aliyun::Aliyun;
 
 impl SMSCaptcha {
     /// Create a new SMS captcha
     pub fn new(phone_number: String, sms_captcha: String) -> SMSCaptcha {
+        let mut rng = rand::thread_rng();
+        let sms_captcha = rng.gen_range(1000..9999).to_string();
+
         SMSCaptcha {
             id: ulid::Ulid::new().to_string(),
             phone_number,
@@ -31,17 +30,16 @@ impl SMSCaptcha {
 
     /// Send sms via aliyun
     pub async fn send(&self) -> Success {
-        let mut client = dysmsapi::Client::NewClientWithAccessKey(
-            ALIYUN_SMS_SERVER_REGION,
-            ALIYUN_SMS_ACCESS_KEY_ID,
-            ALIYUN_SMS_ACCESS_KEY_SECRET,
-        ).expect("aliyun service error");
-        let mut request = dysmsapi::CreateSendSmsRequest();
-        request.PhoneNumbers = strings::Replace(&self.phone_number, "+86", "", -1);
-        request.SignName = "阿里云短信测试".to_string();
-        request.TemplateCode = "SMS_154950909".to_string();
-        request.TemplateParam = json!({"code": &self.sms_captcha}).to_string();
-        let response = client.SendSms(&mut request).expect("send sms error");
+        let aliyun = Aliyun::new(
+            "LTAI5tCoAXkPkTXdHZrFBXqU",
+            "od8cOiHpDbgrWC61sgLdjq501mURk3"
+        );
+        let response = aliyun.send_sms(
+            &self.phone_number,
+            "阿里云短信测试",
+            "SMS_154950909",
+            &json!({"code": &self.sms_captcha}).to_string(),
+        ).await;
         println!("{:?}", &response);
 
         Ok(())

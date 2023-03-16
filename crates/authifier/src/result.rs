@@ -34,6 +34,8 @@ pub enum Error {
 
     TotpAlreadyEnabled,
     DisallowedMFAMethod,
+
+    InvalidSMSCaptcha,
 }
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;

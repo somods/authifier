@@ -23,12 +23,17 @@ impl Account {
         email: String,
         plaintext_password: String,
         verify_email: bool,
+        phone_number: String,
     ) -> Result<Account> {
         // Hash the user's password
         let password = hash_password(plaintext_password)?;
 
         // Get a normalised representation of the user's email
-        let email_normalised = normalise_email(email.clone());
+        let email_normalised = if email != "" {
+            normalise_email(email.clone())
+        }  else {
+            "".to_string()
+        };
 
         // Try to find an existing account
         if let Some(mut account) = authifier
@@ -51,7 +56,7 @@ impl Account {
 
                 email,
                 email_normalised,
-                phone_number: "".to_string(),
+                phone_number,
                 password,
 
                 disabled: false,

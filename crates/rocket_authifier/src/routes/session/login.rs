@@ -3,7 +3,7 @@
 use std::ops::Add;
 use std::time::Duration;
 
-use authifier::models::{EmailVerification, Lockout, MFAMethod, MFAResponse, MFATicket, Session};
+use authifier::models::{Account, EmailVerification, Lockout, MFAMethod, MFAResponse, MFATicket, Session};
 use authifier::util::normalise_email;
 use authifier::{Authifier, Error, Result};
 use iso8601_timestamp::Timestamp;
@@ -19,6 +19,14 @@ pub enum DataLogin {
         email: String,
         /// Password
         password: String,
+        /// Friendly name used for the session
+        friendly_name: Option<String>,
+    },
+    SMSCaptcha {
+        /// Phone number
+        phone_number: String,
+        /// Sms captcha
+        sms_captcha: String,
         /// Friendly name used for the session
         friendly_name: Option<String>,
     },
@@ -152,6 +160,28 @@ pub async fn login(
                 (account, friendly_name)
             } else {
                 return Err(Error::InvalidCredentials);
+            }
+        }
+        DataLogin::SMSCaptcha {
+            phone_number,
+            sms_captcha,
+            friendly_name,
+        } => {
+            // Resolve the SMS captcha
+            authifier
+                .database
+                .find_sms_captcha(&phone_number, &sms_captcha)
+                .await?
+                .ok_or(Error::InvalidSMSCaptcha)?;
+
+            // Find the corresponding account
+            if let Some(account) = authifier.database.find_account_by_phone_number(&phone_number).await?
+            {
+                (account, friendly_name)
+            } else {
+                // Create account
+                let account = Account::new(authifier, "".to_string(), "".to_string(), true, phone_number).await?;
+                (account, friendly_name)
             }
         }
         DataLogin::MFA {

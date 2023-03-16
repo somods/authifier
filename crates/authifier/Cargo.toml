@@ -75,5 +75,4 @@ lettre = "0.10.0-alpha.4"
 handlebars = "4.3.0"
 
 # Sms
-gostd = { version = "0.3.10" }
-alibaba-cloud-sdk-rust = { version = "0.1.10" }
+sms = { version = "0.1.8" }
