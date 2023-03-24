@@ -180,7 +180,7 @@ pub async fn login(
                 (account, friendly_name)
             } else {
                 // Create account
-                let account = Account::new(authifier, "".to_string(), "".to_string(), true, phone_number).await?;
+                let account = Account::new_phone_number_account(authifier, phone_number).await?;
                 (account, friendly_name)
             }
         }

@@ -34,8 +34,8 @@ pub async fn verify_email(
 
     // Update account email
     let response = if let EmailVerification::Moving { new_email, .. } = &account.verification {
-        account.email = new_email.clone();
-        account.email_normalised = normalise_email(new_email.clone());
+        account.email = Some(new_email.clone());
+        account.email_normalised = Some(normalise_email(new_email.clone()));
         ResponseVerify::NoTicket
     } else {
         let mut ticket = MFATicket::new(account.id.to_string(), false);

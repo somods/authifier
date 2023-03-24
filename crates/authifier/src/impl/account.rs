@@ -23,7 +23,6 @@ impl Account {
         email: String,
         plaintext_password: String,
         verify_email: bool,
-        phone_number: String,
     ) -> Result<Account> {
         // Hash the user's password
         let password = hash_password(plaintext_password)?;
@@ -54,10 +53,10 @@ impl Account {
             let mut account = Account {
                 id: ulid::Ulid::new().to_string(),
 
-                email,
-                email_normalised,
-                phone_number,
-                password,
+                email: Option::from(email),
+                email_normalised: Option::from(email_normalised),
+                phone_number: None,
+                password: Option::from(password),
 
                 disabled: false,
                 verification: EmailVerification::Verified,
@@ -84,6 +83,39 @@ impl Account {
 
             Ok(account)
         }
+    }
+
+    /// Create a new phone number account
+    pub async fn new_phone_number_account(
+        authifier: &Authifier,
+        phone_number: String,
+    ) -> Result<Account> {
+        // Create a new account
+        let account = Account {
+            id: ulid::Ulid::new().to_string(),
+
+            email: None,
+            email_normalised: None,
+            phone_number: Option::from(phone_number),
+            password: None,
+
+            disabled: false,
+            verification: EmailVerification::Verified,
+            password_reset: None,
+            deletion: None,
+            lockout: None,
+
+            mfa: Default::default(),
+        };
+
+        // Create and push event
+        authifier
+            .publish_event(AuthifierEvent::CreateAccount {
+                account: account.clone(),
+            })
+            .await;
+
+        Ok(account)
     }
 
     /// Create a new session
@@ -123,7 +155,7 @@ impl Account {
             let url = format!("{}{}", templates.verify.url, token);
 
             smtp.send_email(
-                self.email.clone(),
+                self.email.clone().unwrap(),
                 &templates.verify,
                 json!({
                     "email": self.email.clone(),
@@ -184,8 +216,8 @@ impl Account {
                 ),
             };
         } else {
-            self.email_normalised = normalise_email(new_email.clone());
-            self.email = new_email;
+            self.email_normalised = Option::from(normalise_email(new_email.clone()));
+            self.email = Option::from(new_email);
         }
 
         self.save(authifier).await
@@ -203,7 +235,7 @@ impl Account {
             let url = format!("{}{}", templates.reset.url, token);
 
             smtp.send_email(
-                self.email.clone(),
+                self.email.clone().unwrap(),
                 &templates.reset,
                 json!({
                     "email": self.email.clone(),
@@ -241,7 +273,7 @@ impl Account {
             let url = format!("{}{}", templates.deletion.url, token);
 
             smtp.send_email(
-                self.email.clone(),
+                self.email.clone().unwrap(),
                 &templates.deletion,
                 json!({
                     "email": self.email.clone(),
@@ -267,7 +299,7 @@ impl Account {
 
     /// Verify a user's password is correct
     pub fn verify_password(&self, plaintext_password: &str) -> Success {
-        argon2::verify_encoded(&self.password, plaintext_password.as_bytes())
+        argon2::verify_encoded(&self.password.clone().unwrap(), plaintext_password.as_bytes())
             .map(|v| {
                 if v {
                     Ok(())

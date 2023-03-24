@@ -56,18 +56,18 @@ pub struct Account {
     pub id: String,
 
     /// User's email
-    pub email: String,
+    pub email: Option<String>,
 
     /// Normalised email
     ///
     /// (see https://github.com/insertish/authifier/#how-does-authifier-work)
-    pub email_normalised: String,
+    pub email_normalised: Option<String>,
 
     /// User's phone number
-    pub phone_number: String,
+    pub phone_number: Option<String>,
 
     /// Argon2 hashed password
-    pub password: String,
+    pub password: Option<String>,
 
     /// Whether the account is disabled
     #[serde(default)]

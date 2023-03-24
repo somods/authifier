@@ -64,7 +64,7 @@ pub async fn create_account(
     };
 
     // Create account
-    let account = Account::new(authifier, data.email, data.password, true, "".to_string()).await?;
+    let account = Account::new(authifier, data.email, data.password, true).await?;
 
     // Use up the invite
     if let Some(mut invite) = invite {

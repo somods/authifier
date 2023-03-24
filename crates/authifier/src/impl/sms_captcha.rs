@@ -6,7 +6,7 @@ use sms::aliyun::Aliyun;
 
 impl SMSCaptcha {
     /// Create a new SMS captcha
-    pub fn new(phone_number: String, sms_captcha: String) -> SMSCaptcha {
+    pub fn new(phone_number: String) -> SMSCaptcha {
         let mut rng = rand::thread_rng();
         let sms_captcha = rng.gen_range(1000..9999).to_string();
 

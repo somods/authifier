@@ -11,8 +11,6 @@ use authifier::models::SMSCaptcha;
 pub struct DataSendSmsCaptcha {
     /// Phone Number
     pub phone_number: String,
-    /// SMS Captcha
-    pub sms_captcha: String,
 }
 
 /// # Send Sms Captcha
@@ -26,9 +24,8 @@ pub async fn send_sms_captcha(
 ) -> Result<EmptyResponse> {
     let data = data.into_inner();
     let phone_number = data.phone_number;
-    let sms_captcha = data.sms_captcha;
 
-    let sms_captcha = SMSCaptcha::new(phone_number, sms_captcha);
+    let sms_captcha = SMSCaptcha::new(phone_number);
     sms_captcha.save(authifier).await?;
     sms_captcha.send().await?;
 

@@ -14,7 +14,7 @@ impl From<Account> for AccountInfo {
     fn from(item: Account) -> Self {
         AccountInfo {
             id: item.id,
-            email: item.email,
+            email: item.email.unwrap(),
         }
     }
 }
