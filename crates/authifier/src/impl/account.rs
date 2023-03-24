@@ -108,6 +108,8 @@ impl Account {
             mfa: Default::default(),
         };
 
+        account.save(authifier).await?;
+
         // Create and push event
         authifier
             .publish_event(AuthifierEvent::CreateAccount {
