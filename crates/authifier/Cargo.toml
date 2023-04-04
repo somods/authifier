@@ -75,4 +75,4 @@ lettre = "0.10.0-alpha.4"
 handlebars = "4.3.0"
 
 # Sms
-sms = { version = "0.1.8" }
+tencentcloud-sdk-sms = "0.2.1"
